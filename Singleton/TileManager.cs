@@ -1,5 +1,5 @@
 ﻿using Assets.Scripts;
-
+using Assets.Scripts.Data;
 using Assets.Scripts.Tools;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,34 +18,36 @@ public class TileManager : MonoBehaviour
 
     [HideInInspector]
     public TileDataSO[] AllGroundTileData;
-    int[,] GroundMatrix;
+    [HideInInspector]
+    public int[,] GroundMatrix;
 
     [HideInInspector]
     public TileDataSO[] AllBuildingTileData;
-    int[,] BuildingMatrix;
+    [HideInInspector]
+    public int[,] BuildingMatrix;
 
-
-    TerrainGenerator TerrainGenerator;
-    public void Awake()
-    {
-        TerrainGenerator = FindObjectOfType<TerrainGenerator>();
-    }
     public void Start()
     {
+        GroundMatrix = new int[MapSize, MapSize];
+        BuildingMatrix = new int[MapSize, MapSize];
+
         GenerateTerrain();
     }
 
     public void GenerateTerrain()
     {
-        AllBuildingTileData = Resources.LoadAll("Buildings")
-            .Select(o => (TileDataSO)o)
-            .ToArray();
-        BuildingMatrix = TerrainGenerator.GenerateTerrain_Height(AllBuildingTileData, BuildingMap, MapSize);
+        List<TileDataSO> Data = Resources.LoadAll("Tiles").Select(o => (TileDataSO)o).Init().ToList();
 
-        AllGroundTileData = Resources.LoadAll("Ground")
-            .Select(o => (TileDataSO)o)
-            .ToArray();
-        GroundMatrix = TerrainGenerator.GenerateTerrain_Height(AllGroundTileData, GroundMap, MapSize);
+        AllBuildingTileData = Data
+            .Where(td => td.TargetGenerationLayer == TileMaps.Building).ToArray();
+        //BuildingMatrix = TerrainGenerator.GenerateTerrain_Height(AllBuildingTileData, BuildingMap, MapSize);
+
+        AllGroundTileData = Data
+            .Where(td => td.TargetGenerationLayer == TileMaps.Ground).ToArray();
+        //GroundMatrix = TerrainGenerator.GenerateTerrain_Height(AllGroundTileData, GroundMap, MapSize);
+
+
+        GetComponent<TerrainGenerator>().GenerateAll(this);
     }
 
     public List<TileDataSO> GetAvailableBuildings(Vector3Int cell)
@@ -65,9 +67,8 @@ public class TileManager : MonoBehaviour
     public void UpdateTile(Vector3Int cell, TileDataSO data)
     {
         BuildingMap.SetTile(cell, data.Tile);
-        Debug.Log($"Ground: {GroundMatrix[cell.x, cell.y]} - Building: {BuildingMatrix[cell.x, cell.y]}");
-        Debug.Log($"Ground: {GroundMap.HasTile(cell)} - Building: {BuildingMap.HasTile(cell)}");
-        
+        //Debug.Log($"Ground: {GroundMatrix[cell.x, cell.y]} - Building: {BuildingMatrix[cell.x, cell.y]}");
+        //Debug.Log($"Ground: {GroundMap.HasTile(cell)} - Building: {BuildingMap.HasTile(cell)}");
         BuildingMatrix[cell.x, cell.y] = data.Id;
     }
 
@@ -83,4 +84,22 @@ public class TileManager : MonoBehaviour
     }
 
 
+    public Tilemap GetMap(TileMaps map)
+    {
+        return map switch
+        {
+            TileMaps.Ground => GroundMap,
+            TileMaps.Building => BuildingMap,
+            TileMaps.Overlay => null,
+            _ => null,
+        };
+    }
+    public int[,] GetMatrix(TileMaps matrix){
+        return matrix switch{
+            TileMaps.Ground => GroundMatrix,
+            TileMaps.Building => BuildingMatrix,
+            TileMaps.Overlay => null,
+            _ => null,
+        };
+    }
 }

@@ -9,7 +9,7 @@ namespace Assets.Scripts.Tools
 {
     public static class Noise
     {
-        public static int[,] GenerateNoiseMap(int mapWidth,int mapHeight, float scale)
+        public static int[,] GenerateNoiseMap(int mapWidth,int mapHeight, float scale, int offset)
         {
             int[,] noiseMap = new int[mapWidth, mapHeight];
 
@@ -24,7 +24,7 @@ namespace Assets.Scripts.Tools
                     float sampleX = x / scale;
                     float sampleY = y / scale;
 
-                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
+                    float perlinValue = Mathf.PerlinNoise(sampleX + offset, sampleY + offset);
                     noiseMap[x, y] =  Mathf.RoundToInt(perlinValue * 100);
                 }
             }

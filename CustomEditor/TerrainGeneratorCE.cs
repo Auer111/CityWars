@@ -7,16 +7,16 @@ using UnityEditor;
 using UnityEngine;
 
 
-[CustomEditor(typeof(TerrainGenerator))]
-class TerrainGeneratorCE : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        if (GUILayout.Button("Generate") && Application.isPlaying)
-        {
-            FindObjectOfType<TileManager>().GenerateTerrain();
-        }
+//[CustomEditor(typeof(TerrainGenerator))]
+//class TerrainGeneratorCE : Editor
+//{
+//    public override void OnInspectorGUI()
+//    {
+//        if (GUILayout.Button("Generate") && Application.isPlaying)
+//        {
+//            FindObjectOfType<TileManager>().GenerateTerrain();
+//        }
 
-    }
-}
+//    }
+//}
 

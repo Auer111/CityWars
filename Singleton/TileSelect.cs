@@ -37,17 +37,19 @@ public class TileSelect : MonoBehaviour
 
     void Update()
     {
-        if (Functions.IsPointerOverUIElement()) { return; }
+        //if (Functions.IsPointerOverUIElement()) { return; }
 
-        bool clicked = Input.GetMouseButtonDown(0);
+        bool clicked = false;// Input.GetMouseButtonDown(0);
 
-        Vector3 MousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 MousePos = new Vector3Int().Null();// Camera.main.ScreenToWorldPoint(Input.mousePosition);
         MousePos.z = 0f;
         Vector3Int cell = TM.BuildingMap.WorldToCell(MousePos);
 
         if (cell.x < 0 || cell.y < 0) { return; }
 
         if (clicked){
+            Debug.Log(cell.x + "-" + cell.y);
+
             SelectedCell = cell;
             Hover(cell);
             LoadMenu(cell);
