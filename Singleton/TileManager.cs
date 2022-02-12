@@ -11,6 +11,8 @@ public class TileManager : MonoBehaviour
 {
     public int MapSize = 20;
 
+    public TileCategorySO[] Categories;
+
     [Header("Tilemaps")]
     public Tilemap GroundMap;
     public Tilemap BuildingMap;

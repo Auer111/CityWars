@@ -8,9 +8,14 @@ public class CameraController : MonoBehaviour
     Vector2 mouseClickPos;
     Vector2 mouseCurrentPos;
     bool panning = false;
+    float _time = 0.0f;
 
     private void Update()
     {
+        //Zoom with scrollwheel
+        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - Input.mouseScrollDelta.y, 5,30) ;
+
+
         // When LMB clicked get mouse click position and set panning to true
         if (Input.GetKeyDown(KeyCode.Mouse0) && !panning){
             mouseClickPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -27,14 +32,18 @@ public class CameraController : MonoBehaviour
         if (panning){
             transform.position += PanDistance();
         }
-        else if(velocity != Vector3.zero){
-            velocity = Vector3.Lerp(velocity, Vector3.zero, 3f);
+
+
+        //Let the map pan for a second after you let go for a smooth feel
+        if (!panning && _time <= 1f){
             transform.position += velocity;
+            velocity = Vector3.Lerp(velocity, Vector3.zero, _time);
+            _time += Time.smoothDeltaTime;
         }
-
-
+        else{
+            _time = 0.0f;
+        }
     }
-
 
     Vector3 PanDistance()
     {
